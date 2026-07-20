@@ -1,5 +1,8 @@
 # nohello
 
+[![CI](https://github.com/ji-in-loop/nohello/actions/workflows/ci.yml/badge.svg)](https://github.com/ji-in-loop/nohello/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 A configurable **#nohello** skill: detects chat messages that are just a greeting ("hi",
 "hello", "hello \<name\>", "hi, how are you") with no actual question attached, waits a
 configurable number of seconds for the sender's real ask, and — if it never shows up — sends a
