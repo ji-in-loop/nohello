@@ -23,6 +23,13 @@ export interface NoHelloConfig {
   maxGreetingWords: number;
   /** Words left over after stripping greeting/small-talk phrases (e.g. a name) still allowed before the message counts as substantive. */
   maxLeftoverWords: number;
+  /**
+   * Runs before detection, on the raw message text. The built-in detector already strips common
+   * Slack (`<@U01ABC>`, `<#C01|general>`, `<!here>`) and Teams (`<at>Name</at>`) tokens; use this
+   * for anything else platform-specific that would otherwise count as "leftover" content and
+   * skew classification — Markdown code spans, bare URLs, custom bot syntax, etc.
+   */
+  preprocessText?: (text: string) => string;
 }
 
 export const DEFAULT_CONFIG: NoHelloConfig = {

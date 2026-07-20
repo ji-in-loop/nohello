@@ -41,6 +41,16 @@ describe('renderResponse', () => {
     expect(text).toBe('Hey what do you need?');
   });
 
+  it('preserves deliberate newlines in a multi-line custom template', () => {
+    const text = renderResponse('custom', { name: 'Bala', waitSeconds: 45 }, 'Hey {name}\nDrop the question when ready!');
+    expect(text).toBe('Hey Bala\nDrop the question when ready!');
+  });
+
+  it('still cleans up stray horizontal whitespace per line around an empty {name}', () => {
+    const text = renderResponse('custom', { waitSeconds: 45 }, 'Hey {name}\nDrop the question when ready!');
+    expect(text).toBe('Hey\nDrop the question when ready!');
+  });
+
   it('throws when tone is "custom" but no customTemplate is provided', () => {
     expect(() => renderResponse('custom', { waitSeconds: 45 })).toThrow(/customTemplate/);
   });

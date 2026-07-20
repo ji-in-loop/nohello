@@ -23,6 +23,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: npm
       - run: npm ci
-      - run: npm run typecheck --workspaces --if-present
+      # Build before typecheck: @nohello/slack and @nohello/teams import @nohello/core's types
+      # from its built dist/index.d.ts (per package.json's "types" field), which doesn't exist
+      # until core is built. Typechecking first fails on a fresh checkout with no prior dist/.
       - run: npm run build --workspaces --if-present
+      - run: npm run typecheck --workspaces --if-present
       - run: npm run test --workspaces --if-present

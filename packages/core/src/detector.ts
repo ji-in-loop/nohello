@@ -3,6 +3,7 @@ export interface GreetingDetectionConfig {
   maxLeftoverWords: number;
   extraGreetingPhrases?: string[];
   extraSmalltalkPhrases?: string[];
+  preprocessText?: (text: string) => string;
 }
 
 export interface DetectionResult {
@@ -68,6 +69,24 @@ const SMALLTALK_PHRASES = [
 // Address terms that can trail a greeting ("Hi team", "Hello everyone") without becoming real content.
 const ADDRESS_FILLER = new Set(['there', 'team', 'everyone', 'all', 'folks', 'guys', 'friend', 'friends']);
 
+// Platform decoration tokens that address/route a message rather than carry content — stripped
+// entirely so they never inflate the "leftover word" count and unpredictably flip classification.
+// Slack: <@U01ABC> or <@U01ABC|name> (user mention), <#C01ABC|general> (channel ref), <!here>/
+// <!channel>/<!everyone> (special mentions). Teams: <at>Name</at> — only the wrapper tags are
+// stripped here, leaving "Name" to be handled the same way a plain "Hi Bala" already is.
+const SLACK_USER_MENTION = /<@[UW][A-Z0-9]+(\|[^>]*)?>/gi;
+const SLACK_CHANNEL_REF = /<#[A-Z0-9]+(\|[^>]*)?>/gi;
+const SLACK_SPECIAL_MENTION = /<!(here|channel|everyone)>/gi;
+const TEAMS_MENTION_TAGS = /<\/?at>/gi;
+
+function stripPlatformTokens(text: string): string {
+  return text
+    .replace(SLACK_USER_MENTION, ' ')
+    .replace(SLACK_CHANNEL_REF, ' ')
+    .replace(SLACK_SPECIAL_MENTION, ' ')
+    .replace(TEAMS_MENTION_TAGS, ' ');
+}
+
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -88,7 +107,13 @@ function toTitleCase(text: string): string {
  * by scrubbing known greeting/small-talk phrases and checking what's left.
  */
 export function detectGreetingOnly(rawText: string, config: GreetingDetectionConfig): DetectionResult {
-  const original = rawText.trim();
+  const trimmedRaw = rawText.trim();
+  if (!trimmedRaw) {
+    return { isGreetingOnly: false, matchedPhrases: [] };
+  }
+
+  const preprocessed = config.preprocessText ? config.preprocessText(trimmedRaw) : trimmedRaw;
+  const original = stripPlatformTokens(preprocessed).trim();
   if (!original) {
     return { isGreetingOnly: false, matchedPhrases: [] };
   }

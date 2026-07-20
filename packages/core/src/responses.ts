@@ -40,10 +40,13 @@ const TEMPLATES: Record<Exclude<Tone, 'custom'>, Array<(ctx: ResponseContext) =>
 };
 
 function renderCustomTemplate(template: string, ctx: ResponseContext): string {
-  return template
-    .replaceAll('{name}', ctx.name ?? '')
-    .replaceAll('{waitSeconds}', String(ctx.waitSeconds))
-    .replace(/\s+/g, ' ')
+  const substituted = template.replaceAll('{name}', ctx.name ?? '').replaceAll('{waitSeconds}', String(ctx.waitSeconds));
+  // Collapse runs of spaces/tabs left behind by an empty {name} substitution, per line, but
+  // preserve deliberate newlines in multi-line templates instead of flattening them to one line.
+  return substituted
+    .split('\n')
+    .map((line) => line.replace(/[ \t]+/g, ' ').trim())
+    .join('\n')
     .trim();
 }
 

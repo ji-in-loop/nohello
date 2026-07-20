@@ -32,15 +32,41 @@ jobs:
       - run: npm ci
       - run: npm run build --workspaces --if-present
       - run: npm run test --workspaces --if-present
+      # Packages version independently, so a release usually only bumps one of them. Publishing
+      # all three unconditionally would fail outright on the two whose version hasn't changed
+      # (npm rejects re-publishing an existing version) and could abort the job before the
+      # package that actually needed publishing ever ran. Skip any package whose current
+      # version is already on the registry instead of assuming every release touches all three.
       - name: Publish @nohello/core
-        run: npm publish --workspace packages/core --provenance --tag "${{ inputs.tag || 'latest' }}"
+        working-directory: packages/core
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if npm view "@nohello/core@$PKG_VERSION" version >/dev/null 2>&1; then
+            echo "@nohello/core@$PKG_VERSION is already published, skipping."
+          else
+            npm publish --provenance --tag "${{ inputs.tag || 'latest' }}"
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish @nohello/slack
-        run: npm publish --workspace packages/slack-adapter --provenance --tag "${{ inputs.tag || 'latest' }}"
+        working-directory: packages/slack-adapter
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if npm view "@nohello/slack@$PKG_VERSION" version >/dev/null 2>&1; then
+            echo "@nohello/slack@$PKG_VERSION is already published, skipping."
+          else
+            npm publish --provenance --tag "${{ inputs.tag || 'latest' }}"
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish @nohello/teams
-        run: npm publish --workspace packages/teams-adapter --provenance --tag "${{ inputs.tag || 'latest' }}"
+        working-directory: packages/teams-adapter
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if npm view "@nohello/teams@$PKG_VERSION" version >/dev/null 2>&1; then
+            echo "@nohello/teams@$PKG_VERSION is already published, skipping."
+          else
+            npm publish --provenance --tag "${{ inputs.tag || 'latest' }}"
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

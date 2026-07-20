@@ -13,13 +13,40 @@ interface PlainUserMessage {
   ts?: string;
 }
 
+// Subtypes that represent bookkeeping/system events rather than something a user actually
+// typed. Everything else — including no subtype at all, and content-bearing subtypes like
+// thread_broadcast (a threaded reply also posted to the channel) — is treated as real content.
+// This is deliberately a blocklist rather than an allowlist: Slack adds new subtypes over time,
+// and an allowlist would silently drop ones we didn't anticipate instead of just letting them
+// through like a normal message.
+const NON_CONTENT_SUBTYPES = new Set([
+  'bot_message',
+  'message_changed',
+  'message_deleted',
+  'message_replied',
+  'channel_join',
+  'channel_leave',
+  'channel_topic',
+  'channel_purpose',
+  'channel_name',
+  'channel_archive',
+  'channel_unarchive',
+  'group_join',
+  'group_leave',
+  'pinned_item',
+  'unpinned_item',
+  'reminder_add',
+]);
+
 // Bolt's message event type is a union that includes edits, bot messages, joins/leaves, etc.
 // We only care about plain user messages, so narrow with a runtime check instead of fighting
 // the SDK's discriminated union in the type system.
 function isPlainUserMessage(message: unknown): message is PlainUserMessage {
   if (typeof message !== 'object' || message === null) return false;
   const candidate = message as Record<string, unknown>;
-  if (candidate.subtype) return false; // skip edits, bot messages, joins/leaves, etc.
+  if (typeof candidate.subtype === 'string' && NON_CONTENT_SUBTYPES.has(candidate.subtype)) {
+    return false;
+  }
   return typeof candidate.user === 'string' && typeof candidate.text === 'string' && typeof candidate.channel === 'string';
 }
 
@@ -33,9 +60,10 @@ export function registerNoHello(app: App, options: RegisterNoHelloOptions = {}):
     onNudge:
       options.onNudge ??
       (async (nudge) => {
+        const text = nudge.mentionUser ? `<@${nudge.userId}> ${nudge.text}` : nudge.text;
         await app.client.chat.postMessage({
           channel: nudge.conversationId,
-          text: nudge.text,
+          text,
         });
       }),
   });

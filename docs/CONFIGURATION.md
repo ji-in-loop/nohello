@@ -11,11 +11,12 @@ types and defaults.
 | `tone` | `'professional' \| 'friendly' \| 'satirical' \| 'custom'` | `'professional'` | Which template set renders the nudge. |
 | `customTemplate` | `string` | — | Required when `tone` is `'custom'`. Supports `{name}` and `{waitSeconds}` placeholders. |
 | `cooldownSeconds` | `number` | `600` | After a nudge is sent to a user in a conversation, suppress further nudges to them there for this long. |
-| `mentionUser` | `boolean` | `true` | Hint to adapters that the nudge should @-mention the sender (adapters decide how to apply this). |
+| `mentionUser` | `boolean` | `true` | Whether the nudge should @-mention the sender. Mirrored onto `Nudge.mentionUser`; `@nohello/slack` prepends `<@userId>`, `@nohello/teams` builds a proper mention entity from the captured conversation reference. A custom `onNudge` can read `nudge.mentionUser` and apply it however fits the platform. |
 | `extraGreetingPhrases` | `string[]` | — | Additional greeting openers to treat like "hi"/"hello". |
 | `extraSmalltalkPhrases` | `string[]` | — | Additional no-content phrases to treat like "how are you". |
 | `maxGreetingWords` | `number` | `8` | A message longer than this is never considered greeting-only, no matter its content. |
 | `maxLeftoverWords` | `number` | `2` | Words allowed to remain (e.g. a name) after scrubbing greeting/small-talk phrases before a message stops counting as greeting-only. |
+| `preprocessText` | `(text: string) => string` | — | Runs on the raw message text before detection. The built-in detector already strips common Slack (`<@U01ABC>`, `<#C01\|general>`, `<!here>`) and Teams (`<at>Name</at>`) tokens; use this for anything else platform-specific — Markdown code spans, bare URLs, custom bot syntax — that would otherwise count as "leftover" content. |
 
 ## Setting configuration
 
@@ -69,7 +70,8 @@ lookup) — it sits on the hot path for every message the bot sees, not just gre
 
 `{name}` is replaced with the best-effort name/address term extracted from the greeting (e.g.
 "Hi Bala" → `Bala`), or an empty string if none was present. `{waitSeconds}` is replaced with
-the configured wait.
+the configured wait. Deliberate newlines in a multi-line template are preserved — only runs of
+spaces/tabs (e.g. left behind by an empty `{name}`) get collapsed.
 
 ## Scaling beyond a single process
 

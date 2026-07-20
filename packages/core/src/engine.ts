@@ -19,6 +19,8 @@ export interface Nudge {
   text: string;
   waitedSeconds: number;
   originalMessage: string;
+  /** Mirrors the resolved config's `mentionUser` at fire time — adapters decide how to apply it. */
+  mentionUser: boolean;
 }
 
 export type IngestResult =
@@ -168,6 +170,7 @@ export class NoHelloEngine {
       text,
       waitedSeconds: config.waitSeconds,
       originalMessage: entry.originalMessage,
+      mentionUser: config.mentionUser,
     });
   }
 

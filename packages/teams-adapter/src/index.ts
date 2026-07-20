@@ -1,4 +1,4 @@
-import { ActivityHandler, TurnContext, type ConversationReference } from 'botbuilder';
+import { ActivityHandler, TurnContext, type ConversationReference, type Mention } from 'botbuilder';
 import { NoHelloEngine, type IncomingMessage, type Nudge, type NoHelloEngineOptions } from '@nohello/core';
 
 export interface RegisterNoHelloOptions extends Omit<NoHelloEngineOptions, 'onNudge'> {
@@ -15,7 +15,7 @@ export interface RegisterNoHelloOptions extends Omit<NoHelloEngineOptions, 'onNu
 const DEFAULT_MAX_CONVERSATION_REFERENCES = 10_000;
 
 /** Inserts/refreshes `id` as most-recently-used, evicting the oldest entry once over `maxSize`. */
-function rememberConversationReference(
+export function rememberConversationReference(
   store: Map<string, Partial<ConversationReference>>,
   id: string,
   reference: Partial<ConversationReference>,
@@ -64,10 +64,25 @@ export function createNoHelloBot(
     onNudge:
       options.onNudge ??
       (async (nudge: Nudge) => {
+        // Falls through silently if we've never captured a conversation reference for this
+        // conversationId (e.g. the engine was fed a message via some path other than this
+        // adapter's onMessage handler) — there is nowhere to proactively send the nudge.
         const reference = conversationReferences.get(nudge.conversationId);
         if (!reference) return;
+
         await adapter.continueConversationAsync(botAppId, reference, async (turnContext) => {
-          await turnContext.sendActivity(nudge.text);
+          const sender = reference.user;
+          if (nudge.mentionUser && sender?.id && sender?.name) {
+            const mentionText = `<at>${sender.name}</at>`;
+            const mention: Mention = { type: 'mention', text: mentionText, mentioned: { id: sender.id, name: sender.name } };
+            await turnContext.sendActivity({
+              type: 'message',
+              text: `${mentionText} ${nudge.text}`,
+              entities: [mention],
+            });
+          } else {
+            await turnContext.sendActivity(nudge.text);
+          }
         });
       }),
   });
