@@ -1,0 +1,46 @@
+name: Publish to npm
+
+# Publishes @nohello/core, @nohello/slack, and @nohello/teams to the public npm registry.
+# Triggered by publishing a GitHub Release, or manually via workflow_dispatch. Requires an
+# NPM_TOKEN repository secret (an npm automation token with publish rights for the @nohello
+# scope) — see docs/PUBLISHING.md.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'npm dist-tag to publish under'
+        required: false
+        default: 'latest'
+
+permissions:
+  contents: read
+  id-token: write # required for npm provenance attestations
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          registry-url: 'https://registry.npmjs.org'
+          cache: npm
+      - run: npm ci
+      - run: npm run build --workspaces --if-present
+      - run: npm run test --workspaces --if-present
+      - name: Publish @nohello/core
+        run: npm publish --workspace packages/core --provenance --tag "${{ inputs.tag || 'latest' }}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish @nohello/slack
+        run: npm publish --workspace packages/slack-adapter --provenance --tag "${{ inputs.tag || 'latest' }}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish @nohello/teams
+        run: npm publish --workspace packages/teams-adapter --provenance --tag "${{ inputs.tag || 'latest' }}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,0 +1,23 @@
+{
+  "name": "nohello-example-generic-webhook",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Minimal HTTP-in/HTTP-out example showing how to wire @nohello/core to any chat engine that supports inbound webhooks and an outbound send API (Zoom Team Chat, LinkedIn messaging partners, custom internal bots, etc.).",
+  "license": "MIT",
+  "author": "Balajikumar Murugan",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@nohello/core": "^0.1.0",
+    "express": "^4.21.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.9.0",
+    "typescript": "^5.6.3"
+  }
+}

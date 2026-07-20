@@ -1,0 +1,33 @@
+{
+  "name": "nohello",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "A configurable #nohello skill: detects greeting-only chat messages, waits, and nudges the sender to ask their real question. Ships as a Claude Agent Skill plus reusable adapters for Slack, Teams, and any other chat engine.",
+  "license": "MIT",
+  "author": "Balajikumar Murugan",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ji-in-loop/nohello.git"
+  },
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "eslint .",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.15.0",
+    "eslint": "^9.15.0",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.15.0",
+    "vitest": "^2.1.4"
+  }
+}

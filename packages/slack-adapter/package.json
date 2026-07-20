@@ -1,0 +1,35 @@
+{
+  "name": "@nohello/slack",
+  "version": "0.1.0",
+  "description": "Slack adapter for the #nohello skill — wires @nohello/core into a Slack Bolt app.",
+  "license": "MIT",
+  "author": "Balajikumar Murugan",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "node dist/standalone.js"
+  },
+  "dependencies": {
+    "@nohello/core": "^0.1.0",
+    "@slack/bolt": "^4.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "typescript": "^5.6.3"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "@nohello/teams",
+  "version": "0.1.0",
+  "description": "Microsoft Teams adapter for the #nohello skill — wires @nohello/core into a Bot Framework activity handler.",
+  "license": "MIT",
+  "author": "Balajikumar Murugan",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "node dist/standalone.js"
+  },
+  "dependencies": {
+    "@nohello/core": "^0.1.0",
+    "botbuilder": "^4.23.1",
+    "express": "^4.21.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.9.0",
+    "typescript": "^5.6.3"
+  }
+}
