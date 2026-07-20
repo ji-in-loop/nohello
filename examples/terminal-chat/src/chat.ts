@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- console output is this example's entire UI */
 import readline from 'node:readline';
 import { NoHelloEngine, type Tone } from '@nohello/core';
 
