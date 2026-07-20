@@ -85,6 +85,22 @@ describe('createNoHelloBot', () => {
     engine.dispose();
   });
 
+  it('escapes angle brackets in the sender name inside <at> markup', async () => {
+    const { adapter, sendActivity } = createFakeAdapter();
+    const { handler, engine } = createNoHelloBot(adapter, 'bot1', {
+      config: { waitSeconds: 0.02, cooldownSeconds: 0 },
+    });
+
+    await handler.run(fakeMessageContext({ from: { id: 'u1', name: 'Bala <script>' } }));
+    await sleep(100);
+
+    const sentActivity = sendActivity.mock.calls[0][0];
+    expect(sentActivity.text).toContain('<at>Bala &lt;script&gt;</at>');
+    expect(sentActivity.text).not.toContain('<script>');
+    expect(sentActivity.entities[0].text).toBe('<at>Bala &lt;script&gt;</at>');
+    engine.dispose();
+  });
+
   it('sends plain text with no mention entity when mentionUser is false', async () => {
     const { adapter, sendActivity } = createFakeAdapter();
     const { handler, engine } = createNoHelloBot(adapter, 'bot1', {

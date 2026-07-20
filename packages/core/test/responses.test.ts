@@ -51,6 +51,11 @@ describe('renderResponse', () => {
     expect(text).toBe('Hey\nDrop the question when ready!');
   });
 
+  it('preserves internal blank lines in a custom template', () => {
+    const text = renderResponse('custom', { name: 'Bala', waitSeconds: 45 }, 'Hey {name}\n\nNo hello needed!');
+    expect(text).toBe('Hey Bala\n\nNo hello needed!');
+  });
+
   it('throws when tone is "custom" but no customTemplate is provided', () => {
     expect(() => renderResponse('custom', { waitSeconds: 45 })).toThrow(/customTemplate/);
   });

@@ -87,6 +87,13 @@ function stripPlatformTokens(text: string): string {
     .replace(TEAMS_MENTION_TAGS, ' ');
 }
 
+// Longest first so "hi there" matches before "hi". Detection runs on every message, so the
+// built-in list is sorted once at module load; the merged list is only re-sorted when extras
+// are configured.
+const BUILTIN_PHRASES_SORTED: readonly string[] = [...GREETING_PHRASES, ...SMALLTALK_PHRASES].sort(
+  (a, b) => b.length - a.length,
+);
+
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -122,12 +129,14 @@ export function detectGreetingOnly(rawText: string, config: GreetingDetectionCon
   const maxGreetingWords = config.maxGreetingWords;
   const maxLeftoverWords = config.maxLeftoverWords;
 
-  const phrases = [
-    ...(config.extraGreetingPhrases ?? []),
-    ...GREETING_PHRASES,
-    ...(config.extraSmalltalkPhrases ?? []),
-    ...SMALLTALK_PHRASES,
-  ].sort((a, b) => b.length - a.length); // longest first so "hi there" matches before "hi"
+  const hasExtras = Boolean(config.extraGreetingPhrases?.length || config.extraSmalltalkPhrases?.length);
+  const phrases = hasExtras
+    ? [
+        ...(config.extraGreetingPhrases ?? []),
+        ...(config.extraSmalltalkPhrases ?? []),
+        ...BUILTIN_PHRASES_SORTED,
+      ].sort((a, b) => b.length - a.length)
+    : BUILTIN_PHRASES_SORTED;
 
   let scrubbed = ` ${normalize(original).replace(/[!?.,;:]/g, ' ')} `;
   const matched: string[] = [];

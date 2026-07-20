@@ -31,6 +31,12 @@ export function rememberConversationReference(
   }
 }
 
+// Bot Framework display names shouldn't contain angle brackets, but the name is interpolated
+// into <at>...</at> markup, so escape defensively rather than trust upstream sanitization.
+function escapeAtText(value: string): string {
+  return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+}
+
 /** The subset of BotFrameworkAdapter/CloudAdapter needed to send a message outside a turn. */
 export interface ProactiveMessagingAdapter {
   continueConversationAsync(
@@ -73,7 +79,7 @@ export function createNoHelloBot(
         await adapter.continueConversationAsync(botAppId, reference, async (turnContext) => {
           const sender = reference.user;
           if (nudge.mentionUser && sender?.id && sender?.name) {
-            const mentionText = `<at>${sender.name}</at>`;
+            const mentionText = `<at>${escapeAtText(sender.name)}</at>`;
             const mention: Mention = { type: 'mention', text: mentionText, mentioned: { id: sender.id, name: sender.name } };
             await turnContext.sendActivity({
               type: 'message',

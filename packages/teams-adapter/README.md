@@ -25,6 +25,15 @@ const { handler, engine } = createNoHelloBot(adapter, process.env.MICROSOFT_APP_
 // hand `handler` to your existing HTTP route that calls adapter.process(req, res, ctx => handler.run(ctx))
 ```
 
+### `mentionUser` behavior
+
+With `mentionUser: true` (the default), nudges @-mention the sender using a proper Teams mention
+entity built from the captured conversation reference. This needs both the sender's `id` *and*
+`name` from the original activity — if the name is missing (`context.activity.from` has an id
+but no name), the nudge **silently falls back to plain, un-mentioned text**. Teams virtually
+always includes the name on user activities, so this rarely matters in practice, but if your
+nudges aren't mentioning people, this fallback is the first thing to check.
+
 ## Run the standalone bot
 
 This package also ships a ready-to-run bot (`src/standalone.ts`) driven by environment
