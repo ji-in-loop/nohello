@@ -40,6 +40,15 @@ npm run build
 npm test
 ```
 
+### Try it in 30 seconds (no chat platform needed)
+
+```bash
+NOHELLO_WAIT_SECONDS=5 NOHELLO_TONE=satirical npm run start --workspace nohello-example-terminal-chat
+```
+
+Type a bare `hi`, wait 5 seconds, get nudged. Type a real question before the timer elapses
+and the nudge is cancelled. See [`examples/terminal-chat`](examples/terminal-chat).
+
 ```ts
 import { NoHelloEngine } from '@nohello/core';
 
