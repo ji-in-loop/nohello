@@ -4,6 +4,11 @@
   "description": "Configurable #nohello detection, wait-timer, and tone-based nudge engine. Platform-agnostic — feed it messages, get back nudges to send.",
   "license": "MIT",
   "author": "Balajikumar Murugan",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ji-in-loop/nohello.git",
+    "directory": "packages/core"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

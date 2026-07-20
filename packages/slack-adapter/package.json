@@ -4,6 +4,11 @@
   "description": "Slack adapter for the #nohello skill — wires @nohello/core into a Slack Bolt app.",
   "license": "MIT",
   "author": "Balajikumar Murugan",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ji-in-loop/nohello.git",
+    "directory": "packages/slack-adapter"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
