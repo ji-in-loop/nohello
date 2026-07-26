@@ -17,15 +17,31 @@ Triggers:
 - Manually via **Actions → Publish to npm → Run workflow** (optionally choosing an npm dist-tag,
   e.g. `next` for a prerelease).
 
-### One-time setup
+### One-time setup — npm Trusted Publishing (OIDC), no stored token
 
-1. Create an npm **automation token** with publish rights for the `@nohello` scope: on
-   npmjs.com, Account → Access Tokens → Generate New Token → Automation.
-2. Add it as a repository secret without ever pasting it into chat or shell history where it'd
-   be logged — run this yourself and paste the token at the interactive prompt:
-   ```
-   gh secret set NPM_TOKEN --repo ji-in-loop/nohello
-   ```
+Publishing uses npm Trusted Publishing: the workflow authenticates via a short-lived OIDC token
+GitHub Actions generates for the run, not a stored secret. There is no `NPM_TOKEN` anymore —
+`npm publish` picks up the OIDC token automatically once the package trusts this workflow.
+
+Trusted Publishing can only be configured for a package that already exists on npm (all three
+`@nohello/*` packages do, so this applies directly — a brand-new, never-published package would
+need one manual `npm publish` from a maintainer's machine first). For each of the three packages,
+on npmjs.com:
+
+1. Go to the package's page → **Settings** → **Trusted Publisher**.
+2. Add a GitHub Actions trusted publisher:
+   - **Organization or user**: `ji-in-loop`
+   - **Repository**: `nohello`
+   - **Workflow filename**: `publish.yml` (filename only, not the full path)
+   - **Environment**: leave blank unless a GitHub Environment is set up for this
+3. Save. npm doesn't validate these fields when you save them — a typo only surfaces the next
+   time you try to publish, so double-check the owner/repo/filename match exactly.
+
+Requires npm CLI ≥11.5.1 and Node ≥22.14.0 — the workflow force-upgrades npm before publishing
+rather than relying on whatever `actions/setup-node` bundled.
+
+If you still have an `NPM_TOKEN` secret and a classic automation token from before this
+migration, delete both now — neither is used by `publish.yml` anymore.
 
 ### Cutting a release
 
