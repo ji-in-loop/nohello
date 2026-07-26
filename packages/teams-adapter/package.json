@@ -1,6 +1,6 @@
 {
   "name": "@nohello/teams",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Microsoft Teams adapter for the #nohello skill — wires @nohello/core into a Bot Framework activity handler.",
   "license": "MIT",
   "author": "Balajikumar Murugan",
