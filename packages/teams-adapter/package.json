@@ -28,7 +28,8 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "start": "node dist/standalone.js",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@nohello/core": "^0.1.0",
@@ -38,6 +39,7 @@
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^22.9.0",
+    "@vitest/coverage-v8": "^2.1.9",
     "typescript": "^5.6.3",
     "vitest": "^2.1.4"
   }

@@ -1,7 +1,12 @@
 # nohello
 
-[![CI](https://github.com/ji-in-loop/nohello/actions/workflows/ci.yml/badge.svg)](https://github.com/ji-in-loop/nohello/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/ji-in-loop/nohello/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ji-in-loop/nohello/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/ji-in-loop/nohello/branch/main/graph/badge.svg)](https://codecov.io/gh/ji-in-loop/nohello)
+[![Known Vulnerabilities](https://snyk.io/test/github/ji-in-loop/nohello/badge.svg)](https://snyk.io/test/github/ji-in-loop/nohello)
+[![License: MIT](https://img.shields.io/github/license/ji-in-loop/nohello)](LICENSE)
+[![Node.js >=18](https://img.shields.io/badge/node-%3E%3D18-339933?logo=node.js&logoColor=white)](package.json)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](tsconfig.base.json)
+[![npm workspaces](https://img.shields.io/badge/npm-workspaces-CB3837?logo=npm&logoColor=white)](package.json)
 
 A configurable **#nohello** skill: detects chat messages that are just a greeting ("hi",
 "hello", "hello \<name\>", "hi, how are you") with no actual question attached, waits a
